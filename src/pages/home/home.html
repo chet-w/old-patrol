@@ -1,9 +1,30 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <ion-title>Senior Status</ion-title>
   </ion-navbar>
-</ion-header>
+</ion-header> 
 
 <ion-content padding>
-  <h2>Home</h2>
+  <h2 style="text-align: center">Last seen</h2>
+  <div *ngIf="lastSeenRoom.room === 'kitchen'">
+      <img class="room-image" src="../../assets/imgs/room-icons/kitchen.svg" />
+  </div>
+  <div *ngIf="lastSeenRoom.room === 'toilet'">
+      <img class="room-image" src="../../assets/imgs/room-icons/toilet.svg" />
+  </div>
+  <div *ngIf="lastSeenRoom.room === 'living'">
+      <img class="room-image" src="../../assets/imgs/room-icons/living.svg" />
+  </div>
+  <div *ngIf="lastSeenRoom.room === 'bedroom'">
+      <img class="room-image" src="../../assets/imgs/room-icons/bedroom.svg" />
+  </div>
+  
+  <ion-list>
+    <ion-item>
+        <span>In the {{lastSeenRoom.room}}</span>
+    </ion-item>
+    <ion-item>
+        <span>At around {{lastSeenRoom.dateTime}}</span>
+    </ion-item>
+  </ion-list>
 </ion-content>

@@ -27,11 +27,20 @@ export class HomePage {
   };
 
   // Formatted room details
-  private status = { kitchen: {}, toilet: {}, living: {}, bedroom: {} };
+  private status = { kitchen: { date: "", dateTime: "", time: "", room: "kitchen", isMovement: "", batteryLevel: "" },
+                     toilet: { date: "", dateTime: "", time: "", room: "toilet", isMovement: "", batteryLevel: "" },
+                     living: { date: "", dateTime: "", time: "", room: "living", isMovement: "", batteryLevel: "" },
+                     bedroom: { date: "", dateTime: "", time: "", room: "bedroom", isMovement: "", batteryLevel: "" } 
+                    };
+
+  private lastSeenTime = new Date(Date.now());
+  private lastSeenRoom = this.status.kitchen;
   
 
   constructor(public navCtrl: NavController) {
+    console.log(this.lastSeenRoom.room);
     this.connect();
+    
   }
 
   // ================ Start tutorial slide content ================ 
@@ -98,13 +107,15 @@ export class HomePage {
     const dateTime = parts[0].split(' ');
     const response = {
       date: new Date(dateTime[0]).toDateString(),
+      dateTime: parts[0],
       time: new Date(parts[0]).toLocaleTimeString('en-US'), //new Date(dateTime[1]).toLocaleTimeString(),
       room: parts[1],
       isMovement: parts[2] === '0' ? false : true,
       batteryLevel: parts[3]
     }
     this.assignResponses(response);
-    console.log(this.status);
+    //console.log(this.status);
+    this.findLastSeen();
     return message;
   }
 
@@ -118,5 +129,35 @@ export class HomePage {
     }if(response.room === "living"){
       this.status.living = response;
     }
+  }
+
+  public findLastSeen = () => {
+    const rooms = [];
+    rooms.push(this.status.bedroom);
+    rooms.push(this.status.kitchen);
+    rooms.push(this.status.toilet);
+    rooms.push(this.status.living);
+
+    const lastSeenRoom = rooms.find(el => {
+      return el.isMovement === true;
+    });
+    console.log(lastSeenRoom);
+    if(lastSeenRoom !== undefined){
+      this.lastSeenRoom = lastSeenRoom;
+    }
+    
+
+
+    
+    // const timeDiff = Math.abs(lastSeenRoom.dateTime.getTime() - this.lastSeenTime.getTime());
+     
+    
+    //}
+    
+
+    // const timeDiff = Math.abs(lastSeen.getTime() - this.lastSeenTime.getTime())
+    // console.log(timeDiff);
+
+
   }
 }
