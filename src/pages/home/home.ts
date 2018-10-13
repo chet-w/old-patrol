@@ -1,61 +1,122 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { initPush, sendNotification } from '../../assets/js/push.js';
+
+
+
+declare var Paho: any;
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
+
+
 export class HomePage {
 
-  private publicVapid = "BHfGc0Oy3PprPrlqrTzrjxuTQ6UW_Q-Nehsu81pKRQI7ZkNSNuH7Lu5q1NtmIg-xBVmU6jSxDKrPjzeAhsu58F0";
+  // MQTT settings
+  private mqttStatus: string = 'Disconnected';
+  private mqttClient: any = null;
+  private message: any = '';
+  private messageToSend: string = 'Your message';
+  private topic: string = 'swen325/a3';
+  private clientId: string = 'yourName';
+  private address = {
+	  path: 'barretts.ecs.vuw.ac.nz',
+	  port: 8883,
+	  suffix: '/mqtt'
+  };
 
+  // Formatted room details
+  private status = { kitchen: {}, toilet: {}, living: {}, bedroom: {} };
+  
 
   constructor(public navCtrl: NavController) {
-    if ("serviceWorker" in navigator) {
-      initPush();
-      this.send().catch(err => console.error(err));
+    this.connect();
+  }
+
+  // ================ Start tutorial slide content ================ 
+
+  public connect = () => {
+    this.mqttStatus = `Connecting to ${this.address.path}:${this.address.port}`;
+    //this.mqttClient = new Paho.MQTT.Client('broker.mqttdashboard.com', 8000, '/mqtt', this.clientId);
+    //this.mqttClient = new Paho.MQTT.Client('m15.cloudmqtt.com', 39634, '/mqtt', this.clientId);
+    this.mqttClient = new Paho.MQTT.Client(this.address.path, this.address.port, this.address.suffix, this.clientId);
+
+
+    // set callback handlers
+    this.mqttClient.onConnectionLost = this.onConnectionLost;
+    this.mqttClient.onMessageArrived = this.onMessageArrived;
+
+    // connect the client
+    console.log(`Connecting to ${this.address.path} via websocket ${this.address.port}`);
+    //this.mqttClient.connect({timeout:10, userName:'ptweqash', password:'ncU6vlGPp1mN', useSSL:true, onSuccess:this.onConnect, onFailure:this.onFailure});
+    this.mqttClient.connect({ timeout: 10, useSSL: false, onSuccess: this.onConnect, onFailure: this.onFailure });
+  }
+
+  public disconnect() {
+    if (this.mqttStatus == 'Connected') {
+      this.mqttStatus = 'Disconnecting...';
+      this.mqttClient.disconnect();
+      this.mqttStatus = 'Disconnected';
     }
   }
 
-  /**
-   * Prepare and send notifcation
-   */
-  async send() {
-    console.log("Registering Service Worker...")
-    const register = await navigator.serviceWorker.register('../../assets/js/worker.js');
-    console.log("Registered Service Worker")
-
-
-    console.log("Registering Push...");
-    const subscription = await register.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: this.urlBase64ToUint8Array(this.publicVapid)
-    });
-    console.log("Push Registered");
-
-    await sendNotification(subscription)
-  }
-
-
-  /**
-   * Convert URL safe string to arrary to be processed and used by push notification
-   * @param base64String 
-   */
-  urlBase64ToUint8Array(base64String) {
-    const padding = "=".repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, "+")
-      .replace(/_/g, "/");
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
+  public sendMessage() {
+    if (this.mqttStatus == 'Connected') {
+      this.mqttClient.publish(this.topic, this.messageToSend);
     }
-    return outputArray;
   }
 
+  public onConnect = () => {
+    console.log('Connected');
+    this.mqttStatus = 'Connected';
 
+    // subscribe
+    this.mqttClient.subscribe(this.topic);
+  }
+
+  public onFailure = (responseObject) => {
+    console.log('Failed to connect');
+    this.mqttStatus = 'Failed to connect';
+  }
+
+  public onConnectionLost = (responseObject) => {
+    if (responseObject.errorCode !== 0) {
+      this.mqttStatus = 'Disconnected';
+    }
+  }
+
+  public onMessageArrived = (message) => {
+    //console.log(message.payloadString);
+    this.message = this.handleResponse(message.payloadString);
+  }
+
+  // ================ End tutorial slide content ================ 
+
+  public handleResponse = (message: string) => {
+    const parts = message.split(',');
+    const dateTime = parts[0].split(' ');
+    const response = {
+      date: new Date(dateTime[0]).toDateString(),
+      time: new Date(parts[0]).toLocaleTimeString('en-US'), //new Date(dateTime[1]).toLocaleTimeString(),
+      room: parts[1],
+      isMovement: parts[2] === '0' ? false : true,
+      batteryLevel: parts[3]
+    }
+    this.assignResponses(response);
+    console.log(this.status);
+    return message;
+  }
+
+  public assignResponses = (response) => {
+    if(response.room === "bedroom"){
+      this.status.bedroom = response;
+    }if(response.room === "kitchen"){
+      this.status.kitchen = response;
+    }if(response.room === "toilet"){
+      this.status.toilet = response;
+    }if(response.room === "living"){
+      this.status.living = response;
+    }
+  }
 }

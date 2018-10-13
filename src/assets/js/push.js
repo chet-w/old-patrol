@@ -18,7 +18,7 @@ export function sendNotification(subscription){
     console.log(subscription);
 
     const payload = JSON.stringify({ title: "Push Test" });
-    webPush.sendNotification(subscription, payload).then(() => {
+    webPush.sendNotification(subscription).then(() => {
         console.log("Sent notification");
     }).catch(err => {
         console.error(err);
