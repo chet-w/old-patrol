@@ -8,23 +8,32 @@
   <h2 style="text-align: center">Last seen</h2>
   <div *ngIf="lastSeenRoom.room === 'kitchen'">
       <img class="room-image" src="../../assets/imgs/room-icons/kitchen.svg" />
+      <h2>In the {{lastSeenRoom.room}}</h2>
+      <h5>On {{lastSeenRoom.date}}</h5>
+      <h5>At about {{lastSeenRoom.time}}</h5>
   </div>
   <div *ngIf="lastSeenRoom.room === 'toilet'">
       <img class="room-image" src="../../assets/imgs/room-icons/toilet.svg" />
+      <h2>In the {{lastSeenRoom.room}}</h2>
+      <h5>On {{lastSeenRoom.date}}</h5>
+      <h5>At about {{lastSeenRoom.time}}</h5>
   </div>
   <div *ngIf="lastSeenRoom.room === 'living'">
       <img class="room-image" src="../../assets/imgs/room-icons/living.svg" />
+      <h2>In the {{lastSeenRoom.room}} room</h2>
+      <h5>On {{lastSeenRoom.date}}</h5>
+      <h5>At about {{lastSeenRoom.time}}</h5>
   </div>
   <div *ngIf="lastSeenRoom.room === 'bedroom'">
       <img class="room-image" src="../../assets/imgs/room-icons/bedroom.svg" />
+      <h2>In the {{lastSeenRoom.room}}</h2>
+      <h5>On {{lastSeenRoom.date}}</h5>
+      <h5>At about {{lastSeenRoom.time}}</h5>
   </div>
-  
-  <ion-list>
-    <ion-item>
-        <span>In the {{lastSeenRoom.room}}</span>
-    </ion-item>
-    <ion-item>
-        <span>At around {{lastSeenRoom.dateTime}}</span>
-    </ion-item>
-  </ion-list>
+  <div *ngIf="lastSeenRoom.room === undefined">
+      <img class="room-image" src="../../assets/imgs/room-icons/lost.svg" />
+      <h2>Actually, we're not quiet sure where they are right now</h2>
+      <h5>Give it a second, we'll find out soon.</h5>
+  </div>
+
 </ion-content>

@@ -33,8 +33,7 @@ export class HomePage {
                      bedroom: { date: "", dateTime: "", time: "", room: "bedroom", isMovement: "", batteryLevel: "" } 
                     };
 
-  private lastSeenTime = new Date(Date.now());
-  private lastSeenRoom = this.status.kitchen;
+  private lastSeenRoom = { date: new Date().toDateString(), dateTime: new Date(), time: new Date().toLocaleTimeString(), room: 'kitchen'};
   
 
   constructor(public navCtrl: NavController) {
@@ -144,6 +143,10 @@ export class HomePage {
     console.log(lastSeenRoom);
     if(lastSeenRoom !== undefined){
       this.lastSeenRoom = lastSeenRoom;
+    }
+
+    if(Date.now() - this.lastSeenRoom.dateTime.getTime() > 5000){//300000){ //longer than 5 mins
+      console.log(Date.now() - this.lastSeenRoom.dateTime.getTime() > 5000) //longer than 5seconds
     }
     
 
