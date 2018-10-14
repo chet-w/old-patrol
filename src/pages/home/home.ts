@@ -25,6 +25,7 @@ export class HomePage {
 	  port: 8883,
 	  suffix: '/mqtt'
   };
+  private messageCount: number =  0;
 
   // Formatted room details
   private status = { kitchen: { date: "", dateTime: "", time: "", room: "kitchen", isMovement: "", batteryLevel: "" },
@@ -95,7 +96,7 @@ export class HomePage {
   }
 
   public onMessageArrived = (message) => {
-    //console.log(message.payloadString);
+    console.log(message.payloadString);
     this.message = this.handleResponse(message.payloadString);
   }
 
@@ -131,6 +132,7 @@ export class HomePage {
   }
 
   public findLastSeen = () => {
+    
     const rooms = [];
     rooms.push(this.status.bedroom);
     rooms.push(this.status.kitchen);
@@ -140,13 +142,17 @@ export class HomePage {
     const lastSeenRoom = rooms.find(el => {
       return el.isMovement === true;
     });
-    console.log(lastSeenRoom);
+    let prevRoom;
+    
     if(lastSeenRoom !== undefined){
+      prevRoom = this.lastSeenRoom;
       this.lastSeenRoom = lastSeenRoom;
     }
-
-    if(Date.now() - this.lastSeenRoom.dateTime.getTime() > 5000){//300000){ //longer than 5 mins
-      console.log(Date.now() - this.lastSeenRoom.dateTime.getTime() > 5000) //longer than 5seconds
+    
+    console.log(++this.messageCount);
+    const dif = Date.now() - this.lastSeenRoom.dateTime.getTime();
+    if(dif > 5000 && prevRoom == lastSeenRoom && this.messageCount % 4 === 0){//300000){ //longer than 5
+      console.log("Send notif") //longer than 5seconds
     }
     
 
