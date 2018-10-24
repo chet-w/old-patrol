@@ -20,25 +20,39 @@ export class HomePage {
   private messageToSend: string = 'Your message';
   private topic: string = 'swen325/a3';
   private clientId: string = 'yourName';
+  // private address = {
+	//   path: 'barretts.ecs.vuw.ac.nz',
+	//   port: 8883,
+	//   suffix: '/mqtt'
+  // };
   private address = {
-	  path: 'barretts.ecs.vuw.ac.nz',
-	  port: 8883,
+	  path: 'localhost',
+	  port: 22389,
 	  suffix: '/mqtt'
   };
-  private messageCount: number =  0;
 
-  // Formatted room details
-  private status = { kitchen: { date: "", dateTime: "", time: "", room: "kitchen", isMovement: "", batteryLevel: "" },
-                     toilet: { date: "", dateTime: "", time: "", room: "toilet", isMovement: "", batteryLevel: "" },
-                     living: { date: "", dateTime: "", time: "", room: "living", isMovement: "", batteryLevel: "" },
-                     bedroom: { date: "", dateTime: "", time: "", room: "bedroom", isMovement: "", batteryLevel: "" } 
-                    };
 
-  private lastSeenRoom = { date: new Date().toDateString(), dateTime: new Date(), time: new Date().toLocaleTimeString(), room: 'kitchen'};
-  
+  // App feilds
+  private lastSeenDate: Date;
+  private lastSeenLocation = {};
+  private messageCount: number = 0;     // counts how many of the burst of five messages have been recieved
+  private rooms = [               // Represents the rooms. 
+    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
+    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
+    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
+    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
+    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined}
+   ];
+  // index 0 = living, 
+  // index 1 = kitchen,
+  // index 2 = dining,
+  // index 3 = toilet,
+  // index 4 = bedroom
+
+
+
 
   constructor(public navCtrl: NavController) {
-    console.log(this.lastSeenRoom.room);
     this.connect();
     
   }
@@ -47,8 +61,6 @@ export class HomePage {
 
   public connect = () => {
     this.mqttStatus = `Connecting to ${this.address.path}:${this.address.port}`;
-    //this.mqttClient = new Paho.MQTT.Client('broker.mqttdashboard.com', 8000, '/mqtt', this.clientId);
-    //this.mqttClient = new Paho.MQTT.Client('m15.cloudmqtt.com', 39634, '/mqtt', this.clientId);
     this.mqttClient = new Paho.MQTT.Client(this.address.path, this.address.port, this.address.suffix, this.clientId);
 
 
@@ -96,8 +108,10 @@ export class HomePage {
   }
 
   public onMessageArrived = (message) => {
-    console.log(message.payloadString);
-    this.message = this.handleResponse(message.payloadString);
+    this.handleResponse(message.payloadString);
+    if(this.messageCount === 5){
+      this.determineLastSeenRoom();
+    }
   }
 
   // ================ End tutorial slide content ================ 
@@ -113,60 +127,41 @@ export class HomePage {
       isMovement: parts[2] === '0' ? false : true,
       batteryLevel: parts[3]
     }
-    this.assignResponses(response);
-    //console.log(this.status);
-    this.findLastSeen();
-    return message;
-  }
 
-  public assignResponses = (response) => {
-    if(response.room === "bedroom"){
-      this.status.bedroom = response;
-    }if(response.room === "kitchen"){
-      this.status.kitchen = response;
-    }if(response.room === "toilet"){
-      this.status.toilet = response;
-    }if(response.room === "living"){
-      this.status.living = response;
+    if(response.room === "living"){
+      this.rooms[0] = response;
+    }else if(response.room === "kitchen"){
+      this.rooms[1] = response;
+    }else if(response.room === "dining"){
+      this.rooms[2] = response;
+    }else if(response.room === "toilet"){
+      this.rooms[3] = response; 
+    }else{
+      this.rooms[4] = response; 
     }
+    
+    if(this.messageCount < 5){
+      this.messageCount++
+    }else{
+      this.messageCount = 0
+    }
+
   }
 
-  public findLastSeen = () => {
-    
-    const rooms = [];
-    rooms.push(this.status.bedroom);
-    rooms.push(this.status.kitchen);
-    rooms.push(this.status.toilet);
-    rooms.push(this.status.living);
-
-    const lastSeenRoom = rooms.find(el => {
-      return el.isMovement === true;
+  public determineLastSeenRoom = () => {
+    const room = this.rooms.find(el => {
+      return el.isMovement === true
     });
-    let prevRoom;
-    
-    if(lastSeenRoom !== undefined){
-      prevRoom = this.lastSeenRoom;
-      this.lastSeenRoom = lastSeenRoom;
+
+    if(room !== undefined){
+      console.log(`Movement seen in ${room.room} ${room.dateTime}`);
+      this.lastSeenLocation = room;
+    }else{
+      console.log(`No movement - last seen location: ${this.lastSeenLocation.room} ${this.lastSeenLocation.dateTime}`);
     }
     
-    console.log(++this.messageCount);
-    const dif = Date.now() - this.lastSeenRoom.dateTime.getTime();
-    if(dif > 5000 && prevRoom == lastSeenRoom && this.messageCount % 4 === 0){//300000){ //longer than 5
-      console.log("Send notif") //longer than 5seconds
-    }
-    
-
-
-    
-    // const timeDiff = Math.abs(lastSeenRoom.dateTime.getTime() - this.lastSeenTime.getTime());
-     
-    
-    //}
-    
-
-    // const timeDiff = Math.abs(lastSeen.getTime() - this.lastSeenTime.getTime())
-    // console.log(timeDiff);
-
-
   }
+
 }
+
+
