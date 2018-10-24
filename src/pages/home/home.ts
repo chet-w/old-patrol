@@ -33,15 +33,14 @@ export class HomePage {
 
 
   // App feilds
-  private lastSeenDate: Date;
-  private lastSeenLocation = {};
+  private lastSeenLocation = { date: undefined, dateTime: undefined, time: undefined, room:"not sure where", isMovement: undefined, batteryLevel: undefined };
   private messageCount: number = 0;     // counts how many of the burst of five messages have been recieved
   private rooms = [               // Represents the rooms. 
-    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
-    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
-    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
-    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined},
-    {date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined}
+    { date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined },
+    { date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined },
+    { date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined },
+    { date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined },
+    { date: undefined, dateTime: undefined, time: undefined, room:undefined, isMovement: undefined, batteryLevel: undefined }
    ];
   // index 0 = living, 
   // index 1 = kitchen,
@@ -111,6 +110,7 @@ export class HomePage {
     this.handleResponse(message.payloadString);
     if(this.messageCount === 5){
       this.determineLastSeenRoom();
+
     }
   }
 
@@ -158,6 +158,15 @@ export class HomePage {
       this.lastSeenLocation = room;
     }else{
       console.log(`No movement - last seen location: ${this.lastSeenLocation.room} ${this.lastSeenLocation.dateTime}`);
+      
+      const now = Date.now();
+      const time = new Date(this.lastSeenLocation.dateTime).getTime();
+      
+      console.log(time - now);
+      
+      // if(this.lastSeenLocation.dateTime -  > 20000){  //300000
+      //   console.log("SEND A NOTIFICATION")
+      // }
     }
     
   }
