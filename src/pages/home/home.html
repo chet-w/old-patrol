@@ -1,39 +1,49 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Senior Status</ion-title>
-  </ion-navbar>
-</ion-header> 
+    <ion-navbar>
+        <ion-title>Senior Status</ion-title>
+    </ion-navbar>
+</ion-header>
 
 <ion-content padding>
-  <!-- <h2 style="text-align: center">Last seen</h2>
-  <div *ngIf="lastSeenRoom.room === 'kitchen'">
-      <img class="room-image" src="../../assets/imgs/room-icons/kitchen.svg" />
-      <h2>In the {{lastSeenRoom.room}}</h2>
-      <h5>On {{lastSeenRoom.date}}</h5>
-      <h5>At about {{lastSeenRoom.time}}</h5>
-  </div>
-  <div *ngIf="lastSeenRoom.room === 'toilet'">
-      <img class="room-image" src="../../assets/imgs/room-icons/toilet.svg" />
-      <h2>In the {{lastSeenRoom.room}}</h2>
-      <h5>On {{lastSeenRoom.date}}</h5>
-      <h5>At about {{lastSeenRoom.time}}</h5>
-  </div>
-  <div *ngIf="lastSeenRoom.room === 'living'">
-      <img class="room-image" src="../../assets/imgs/room-icons/living.svg" />
-      <h2>In the {{lastSeenRoom.room}} room</h2>
-      <h5>On {{lastSeenRoom.date}}</h5>
-      <h5>At about {{lastSeenRoom.time}}</h5>
-  </div>
-  <div *ngIf="lastSeenRoom.room === 'bedroom'">
-      <img class="room-image" src="../../assets/imgs/room-icons/bedroom.svg" />
-      <h2>In the {{lastSeenRoom.room}}</h2>
-      <h5>On {{lastSeenRoom.date}}</h5>
-      <h5>At about {{lastSeenRoom.time}}</h5>
-  </div>
-  <div *ngIf="lastSeenRoom.room === undefined">
-      <img class="room-image" src="../../assets/imgs/room-icons/lost.svg" />
-      <h2>Actually, we're not quiet sure where they are right now</h2>
-      <h5>Give it a second, we'll find out soon.</h5>
-  </div> -->
+    <h2 style="text-align: center">Last seen</h2>
+    <div *ngIf="lastSeenLocation.room === undefined">
+        <img class="room-image" src="../../assets/imgs/room-icons/waiting.svg" />
+        <h2>Hold on..</h2>
+        <h5>Waiting on the data for now. Give it a second, we'll find out soon.</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room === 'dining'">
+        <img class="room-image" src="../../assets/imgs/room-icons/dining.svg" />
+        <h2>In the Dining Room</h2>
+        <h5>On {{lastSeenLocation.date}}</h5>
+        <h5>At about {{lastSeenLocation.time}}</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room === 'kitchen'">
+        <img class="room-image" src="../../assets/imgs/room-icons/kitchen.svg" />
+        <h2>In the Kitchen</h2>
+        <h5>On {{lastSeenLocation.date}}</h5>
+        <h5>At about {{lastSeenLocation.time}}</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room === 'toilet'">
+        <img class="room-image" src="../../assets/imgs/room-icons/toilet.svg" />
+        <h2>In the Toilet</h2>
+        <h5>On {{lastSeenLocation.date}}</h5>
+        <h5>At about {{lastSeenLocation.time}}</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room === 'living'">
+        <img class="room-image" src="../../assets/imgs/room-icons/living.svg" />
+        <h2>In the Living Room</h2>
+        <h5>On {{lastSeenLocation.date}}</h5>
+        <h5>At about {{lastSeenLocation.time}}</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room === 'bedroom'">
+        <img class="room-image" src="../../assets/imgs/room-icons/bedroom.svg" />
+        <h2>In the Bedroom</h2>
+        <h5>On {{lastSeenLocation.date}}</h5>
+        <h5>At about {{lastSeenLocation.time}}</h5>
+    </div>
+    <div *ngIf="lastSeenLocation.room !== undefined">
+        <h2>Location History</h2>
+        <canvas id="chart" #chart style="height: 30vh"></canvas>
+    </div>
 
 </ion-content>

@@ -17,14 +17,14 @@
 
 
 .room-image {
-    margin:10%; 
-    margin-bottom: 5%; 
-    margin-left: 50%;
-    width:80%;
+    margin-top:5vw; 
+    margin-bottom: 5vw; 
+    margin-left: 15vw;
+    width: 60vw;
     animation: enter-left 0.4s ease forwards;
 }
 
 @keyframes enter-left {
-    from { margin-left: 50% };
-    to { margin-left: 10% };
+    from { margin-left: 50vw };
+    to { margin-left: 15vw };
 }
