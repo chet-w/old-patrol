@@ -23,16 +23,16 @@ export class HomePage {
   private messageToSend: string = 'Your message';
   private topic: string = 'swen325/a3';
   private clientId: string = 'TestUser';
-  // private address = {
-	//   path: 'barretts.ecs.vuw.ac.nz',
-	//   port: 8883,
-	//   suffix: '/mqtt'
-  // };
   private address = {
-	  path: 'localhost',
-	  port: 22389,
+	  path: 'barretts.ecs.vuw.ac.nz',
+	  port: 8883,
 	  suffix: '/mqtt'
   };
+  // private address = {
+	//   path: 'localhost',
+	//   port: 22389,
+	//   suffix: '/mqtt'
+  // };
 
 
   // App feilds
@@ -209,7 +209,7 @@ export class HomePage {
           data: [this.livingCount, this.kitchenCount, this.diningCount, this.toiletCount, this.bedroomCount],
           backgroundColor: [
             "#E74C3C", "#A569BD", "#3498DB", "#27AE60", "#F39C12"
-          ]
+          ] 
         }]
       }
     });
